@@ -32,6 +32,7 @@ public final class DimModeController {
   private static int originalBrightness=-1;
   private static int originalMode=-1;
   private static long generation=0;
+  private static volatile long lastRemoteTap=0;
   private DimModeController(){}
   public static boolean isActive(){return active;}
   public static boolean permissions(Context c) {
@@ -132,6 +133,7 @@ public final class DimModeController {
    */
   public static void beforeRemoteTap() {
     if(!active)return;
+    lastRemoteTap=SystemClock.elapsedRealtime();
     if(Looper.myLooper()==Looper.getMainLooper()) {
       clearShield();
       scheduleShield();
@@ -144,10 +146,15 @@ public final class DimModeController {
   private static void scheduleShield() {
     long cycle=generation;
     MAIN.postDelayed(()->{
-      if(active&&generation==cycle&&touchShield==null && context!=null) {
+      if(!active || generation!=cycle)return;
+      if(SystemClock.elapsedRealtime()-lastRemoteTap<1050) {
+        scheduleShield();
+        return;
+      }
+      if(touchShield==null && context!=null) {
         try{createShield(context);}catch(Exception e){android.util.Log.w("AmpyDesk","Shield restore failed",e);}
       }
-    },650);
+    },1100);
   }
   public static synchronized void exit() {
     generation++;
