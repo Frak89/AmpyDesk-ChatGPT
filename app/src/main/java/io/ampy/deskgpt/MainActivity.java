@@ -50,6 +50,7 @@ public final class MainActivity extends Activity {
   }
   @Override public void onCreate(Bundle saved) {
     super.onCreate(saved);
+    DimModeController.recoverIfNeeded(this);
     getWindow().setStatusBarColor(Color.rgb(5,12,22));
     ScrollView scroll = new ScrollView(this); scroll.setFillViewport(true);
     root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setPadding(26,32,26,32);
@@ -67,7 +68,22 @@ public final class MainActivity extends Activity {
     });
     button("◉ AVVIA VIDEO LIVE APPLICAZIONI (consenso Android)", this::requestLiveCapture);
     button("□ INTERROMPI VIDEO LIVE", () -> { stopService(new Intent(this,ProjectionService.class)); refresh(); });
-    button("■ FERMA DESKTOP", () -> { stopService(new Intent(this, DeskService.class)); refresh(); });
+    button("◐ STEALTH • ATTIVA LUMINOSITÀ MINIMA", () -> {
+      if(!DimModeController.permissions(this)) {
+        Toast.makeText(this,"Concedi prima Modifica impostazioni e Disegna sopra altre app.",Toast.LENGTH_LONG).show();
+        return;
+      }
+      if(DimModeController.enter(this))Toast.makeText(this,
+        "STEALTH ATTIVO: tocca il telefono per ripristinare la luminosità. Massimo due ore.",Toast.LENGTH_LONG).show();
+      else Toast.makeText(this,"Stealth non disponibile su questo dispositivo",Toast.LENGTH_LONG).show();
+      refresh();
+    });
+    button("☼ STEALTH • RIPRISTINA LUMINOSITÀ", () -> {
+      DimModeController.exit();refresh();
+    });
+    button("1 · AUTORIZZA MODIFICA LUMINOSITÀ", () -> DimModeController.requestWriteSettings(this));
+    button("2 · AUTORIZZA TOUCH PER RIPRISTINO", () -> DimModeController.requestOverlay(this));
+        button("■ FERMA DESKTOP", () -> { stopService(new Intent(this, DeskService.class)); refresh(); });
     button("▢ WINDOWS BRIDGE • WINDOWED", () -> { getSharedPreferences("desk",MODE_PRIVATE).edit().putString("mode","windowed").apply(); refresh(); });
     button("⛶ WINDOWS BRIDGE • FULLSCREEN", () -> { getSharedPreferences("desk",MODE_PRIVATE).edit().putString("mode","fullscreen").apply(); refresh(); });
     button("♧ ABILITA ACCESSIBILITÀ / CONTROLLO TOUCH", () -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
@@ -79,6 +95,7 @@ public final class MainActivity extends Activity {
     });
     button("⟳ AGGIORNA STATO / URL", this::refresh);
     line("Connetti il PC alla stessa rete Wi-Fi o usa tethering USB. Copia il link completo visualizzato sopra nel browser del PC.",14);
+    line("Stealth Display mantiene il pannello acceso alla luminosità minima consentita (NON 0 nits). Un tocco sul Pixel ripristina la luminosità, mentre il mouse PC può continuare a inviare tocchi. Pressione del pulsante Power, timeout e arresto server interrompono Stealth.",13);
     line("Live Video: seleziona l'intero schermo nella finestra di consenso di Android. Il video si interrompe quando blocchi il telefono. Per mantenere il display fisico spento servono autorizzazioni ADB separate; Device Owner non basta.",13);
     line("La finestra Remote Phone sul PC mostra un singolo display Android, non piu' finestre di app indipendenti. Il keymapper invia tocchi brevi con Accessibilita'.",13);
     refresh();
@@ -92,7 +109,9 @@ public final class MainActivity extends Activity {
       "\nBridge mode: "+getSharedPreferences("desk",MODE_PRIVATE).getString("mode","windowed")+
       "\nDevice Owner: "+(dpm.isDeviceOwnerApp(getPackageName())?"ATTIVO":"NON ATTIVO")+
       "\nAccessibilità: "+(RemoteService.active!=null?"ATTIVA":"NON ATTIVA")+
-      "\nVideo Live: "+(ProjectionService.active?"ATTIVO":"NON ATTIVO"));
+      "\nVideo Live: "+(ProjectionService.active?"ATTIVO":"NON ATTIVO")+
+      "\nStealth Display: "+(DimModeController.isActive()?"ATTIVO":"SPENTO")+
+      "\nPermessi Stealth: "+(DimModeController.permissions(this)?"OK":"DA CONCEDERE"));
   }
   @Override protected void onResume() { super.onResume(); if(status!=null) refresh(); }
 }
