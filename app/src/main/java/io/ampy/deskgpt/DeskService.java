@@ -96,6 +96,7 @@ public final class DeskService extends Service {
     } finally { running=false; serving=false; }
   }
   @Override public void onDestroy() {
+    DimModeController.exit();
     serving=false; running=false;
     try { if(server!=null) server.close(); } catch(Exception ignored) {}
     if(pool!=null) pool.shutdownNow();
@@ -201,9 +202,15 @@ public final class DeskService extends Service {
         .put("accessibility",RemoteService.active!=null)
         .put("live",ProjectionService.active)
         .put("liveTransport","mjpeg")
+        .put("stealth",DimModeController.isActive())
+        .put("stealthPermission",DimModeController.permissions(this))
         .put("mode",getSharedPreferences("desk",MODE_PRIVATE).getString("mode","windowed"))
         .put("version","0.2.0").put("transferRoot","AmpyDeskGPT private Transfer folder");
       send(out,200,"application/json",obj.toString());return;
+    }
+    if(method.equals("POST") && path.equals("/api/dim/restore")) {
+      DimModeController.exit();
+      send(out,200,"application/json","{\"restored\":true}");return;
     }
     if(method.equals("GET") && path.equals("/api/apps")) {
       JSONArray result=new JSONArray();
