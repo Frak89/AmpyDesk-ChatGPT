@@ -190,28 +190,70 @@ async function renderFiles(c) {
   await list();
 }
 function renderRemote(c) {
-  append(c,mk("h2","","Pixel 7 Pro // Android display"),mk("p","subtle","Screenshot tramite Accessibilità (campionamento, non video a 60 FPS). Display acceso e telefono sbloccato. Il desktop virtuale resta indipendente."));
-  let row=mk("div","row");for(const [label,name] of [["⌂ Home","home"],["↶ Back","back"],["▤ Recent","recents"],["⏷ Notifications","notifications"]]){
-    row.append(action(label,async()=>{try{await post("/api/action?name="+name)}catch(e){toast("Android unavailable")}}))
-  }c.append(row);
-  let s=mk("div","screen");s.style.marginTop="12px";
-  let img=mk("img");img.alt="Android screen";let help=mk("span","overlaylabel","Tap a point to control Android");s.append(img,help);c.append(s);
-  let status=mk("p","subtle","Starting remote view...");c.append(status);
-  img.addEventListener("click",async e=>{
-    const box=img.getBoundingClientRect();let x=(e.clientX-box.left)/box.width,y=(e.clientY-box.top)/box.height;
-    if(remap){keymap[remap]=[+x.toFixed(4),+y.toFixed(4)];localStorage.setItem("ampy.keys",JSON.stringify(keymap));toast("Mapped "+remap);remap=null;return}
-    try{await post("/api/tap?x="+x+"&y="+y)}catch(e){toast("Tap not sent: unlock phone / enable accessibility")}
-  });
-  let alive=true;
-  const poll=async()=>{
-    if(!document.contains(s))return;
-    if(document.hidden){setTimeout(poll,1400);return}
-    try{const r=await requests("/api/screen");let blob=await r.blob();let url=URL.createObjectURL(blob);
-      img.onload=()=>{if(screenURL)URL.revokeObjectURL(screenURL);screenURL=url};
-      img.src=url;status.textContent="LIVE SNAPSHOT • click on image or use mapped keys";
-    }catch(e){status.textContent="Screen unavailable. Enable accessibility and unlock the Pixel."}
-    setTimeout(poll,950);
-  };poll();
+  append(c,mk("h2","","Pixel Android // Remote Live Window"),
+    mk("p","subtle","Per il LIVE avvia la cattura video nell'app Pixel e accetta la richiesta di Android scegliendo l'intero schermo. A schermo bloccato la condivisione termina. Stealth Display mantiene il telefono sveglio alla luminosità minima."));
+  let row=mk("div","row");
+  for(const [label,name] of [["⌂ Home","home"],["↶ Back","back"],["▤ Recent","recents"],["⏷ Notifications","notifications"]]){
+    row.append(action(label,async()=>{try{await post("/api/action?name="+name)}catch(e){toast("Controllo Android non disponibile")}}));
+  }
+  c.append(row);
+  let tools=mk("div","row");tools.style.marginTop="10px";
+  tools.append(action("☼ Ripristina luce Pixel",async()=>{
+    try{await post("/api/dim/restore");toast("Luminosità originale ripristinata sul Pixel");}catch(e){toast(e.message)}
+  }));
+  tools.append(action("⛶ Video fullscreen",async()=>{
+    try{await videoBox.requestFullscreen()}catch(e){toast("Fullscreen non disponibile")}
+  }));
+  c.append(tools);
+  let videoBox=mk("div","screen");videoBox.style.marginTop="12px";
+  let img=mk("img");img.alt="Android screen";
+  let help=mk("span","overlaylabel","Live stream o screenshot • mouse = touch");
+  videoBox.append(img,help);c.append(videoBox);
+  let status=mk("p","subtle","Verifico cattura Android e Accessibilità...");c.append(status);
+  let streaming=false,localURL=null,viewAlive=true,busy=false;
+  img.onclick=async e=>{
+    const rect=img.getBoundingClientRect();
+    const x=(e.clientX-rect.left)/rect.width,y=(e.clientY-rect.top)/rect.height;
+    if(remap){
+      keymap[remap]=[+x.toFixed(4),+y.toFixed(4)];
+      localStorage.setItem("ampy.keys",JSON.stringify(keymap));toast("Mapped "+remap);remap=null;return;
+    }
+    try{await post("/api/tap?x="+x+"&y="+y)}
+    catch(e){toast("Touch non inviato: controlla Accessibilità e blocco schermo")}
+  };
+  function switchLive(){
+    if(streaming)return;
+    streaming=true;
+    if(localURL){URL.revokeObjectURL(localURL);localURL=null}
+    img.src=api("/api/live");status.textContent="LIVE MJPEG • Video del Pixel, ridimensionabile • controllo mouse/tastiera via Accessibilità";
+    img.onerror=()=>{streaming=false;img.removeAttribute("src");status.textContent="Stream interrotto sul Pixel. Verifico lo stato..."};
+  }
+  async function snapshot(){
+    if(!document.contains(videoBox)||streaming||busy||document.hidden)return;
+    busy=true;
+    try{
+      const r=await requests("/api/screen");
+      const blob=await r.blob();const url=URL.createObjectURL(blob);
+      img.onerror=null;img.onload=()=>{if(localURL)URL.revokeObjectURL(localURL);localURL=url};
+      img.src=url;status.textContent="FALLBACK SCREENSHOT • Per streaming continuo autorizza Live sul Pixel";
+    }catch(e){status.textContent="Display non disponibile: avvia Live oppure abilita Accessibilità e sblocca Android."}
+    finally{busy=false}
+  }
+  async function monitor(){
+    if(!document.contains(videoBox)){
+      viewAlive=false;if(localURL)URL.revokeObjectURL(localURL);return;
+    }
+    try{
+      const result=await json("/api/status");state=result;
+      if(result.live)switchLive();
+      else{
+        if(streaming){streaming=false;img.onerror=null;img.removeAttribute("src")}
+        await snapshot();
+      }
+    }catch(e){status.textContent="Connessione al Pixel non disponibile";}
+    if(viewAlive)setTimeout(monitor,streaming?2200:900);
+  }
+  monitor();
 }
 function renderKeys(c) {
   append(c,mk("h2","","Keyboard to Android touch"),mk("p","subtle","Select a key to remap, then click a position in Remote Phone. Keyboard presses produce short touches, NOT sustained gamepad input. Some games reject accessibility input."));
