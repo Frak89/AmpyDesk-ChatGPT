@@ -42,8 +42,50 @@ body[data-theme=violet]{--cyan:#c997ff;--gold:#64f3ef;--violet:#f1a9ff;--stroke:
 body[data-theme=mono]{--cyan:#d0e7ed;--gold:#e3e7ec;--violet:#fff;--stroke:rgba(205,220,231,.4)}
 body.reduce *,body.reduce *:before,body.reduce *:after{animation-duration:.001s!important;transition-duration:.001s!important}
 @media(max-width:680px){.window{left:4%!important;top:9%!important;width:92%!important;height:75%!important}#top .small{display:none}#icons{top:60px;flex-direction:row;flex-wrap:wrap;right:0;left:8px}.tile{width:80px;min-height:75px}.tile .glyph{font-size:23px}.tile span:last-child{font-size:10px}}
+
+/* Shared Ampy-family visual language: Pad, RAW, Deck, Cam, Rocket. */
+body[data-theme="cyberpunk"]{--cyan:#00ffe2;--gold:#ffd16a;--violet:#ff3ac8;--ink:#070b13;--glass:rgba(12,27,46,.85);--stroke:rgba(0,255,226,.35)}
+body[data-theme="vista"]{--cyan:#60d8ff;--gold:#ffd389;--violet:#83aaff;--ink:#071427;--glass:rgba(20,52,83,.82);--stroke:rgba(128,185,223,.57)}
+body[data-theme="futuristic"]{--cyan:#9be7ff;--gold:#ffcf88;--violet:#c797ff;--ink:#0c1026;--glass:rgba(29,35,74,.84);--stroke:rgba(120,133,220,.65)}
+body[data-theme="retro"]{--cyan:#e5b64f;--gold:#91c66d;--violet:#d9a46f;--ink:#171910;--glass:rgba(38,39,25,.95);--stroke:rgba(118,104,66,.6)}
+body[data-theme="modern"]{--cyan:#71b7ff;--gold:#e5e7ec;--violet:#8b9dae;--ink:#121723;--glass:rgba(32,41,54,.96);--stroke:rgba(66,86,105,.6)}
+body[data-theme="bloodmoon"]{--cyan:#ff2b4e;--gold:#ffb000;--violet:#d45175;--ink:#0d0507;--glass:rgba(31,11,16,.94);--stroke:rgba(255,43,78,.5)}
+body[data-theme="retro"] #wall{background:radial-gradient(ellipse at center,#33251b,#111810 70%)}
+body[data-theme="bloodmoon"] #wall{background:radial-gradient(ellipse at 60% 35%,#3b081b,#060306 70%)}
+body[data-theme="vista"] #wall{background:radial-gradient(ellipse at 50% 30%,#205c90,#05142b 75%)}
+body[data-bg="warp"] #wall:before{background:repeating-conic-gradient(from 10deg at 50% 50%,transparent 0deg,rgba(80,204,234,.16) .08deg,transparent .5deg,transparent 6deg);animation:warp 22s linear infinite}
+@keyframes warp{from{transform:scale(.45) rotate(-4deg)}to{transform:scale(2.5) rotate(4deg)}}
+body[data-bg="synthwave"] #wall:before{inset:40% -20% -30%;background:repeating-linear-gradient(0deg,transparent 0 26px,rgba(33,235,238,.23) 27px,transparent 28px),repeating-linear-gradient(90deg,transparent 0 60px,rgba(225,57,241,.19) 61px,transparent 62px);transform:perspective(450px) rotateX(63deg);animation:synthDrift 13s linear infinite}
+@keyframes synthDrift{0%{background-position:0 0,0 0}to{background-position:0 84px,120px 0}}
+body[data-bg="honeycomb"] #wall:before{inset:0;transform:none;background:repeating-radial-gradient(circle at 25% 50%,transparent 0 38px,#24c0dc18 40px,#24c0dc18 42px,transparent 44px,transparent 80px);animation:honey 14s ease-in-out infinite alternate}
+@keyframes honey{to{transform:scale(1.12) rotate(9deg)}}
+body[data-bg="aurora"] #wall:before{inset:-30%;background:conic-gradient(from 90deg at 40% 50%,transparent,#09dbbc22,transparent,#8e29e022,transparent);animation:rotate 40s linear infinite}
+body[data-bg="static"] #wall:before{animation:none;opacity:.18}
+.window{isolation:isolate}.window:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 1px 1px #ffffff40,inset 0 -1px 2px #15cfea12}
+body[data-theme="vista"] .window{box-shadow:0 23px 80px #0008,0 0 0 1px #b5e5ff33 inset}
+body[data-theme="modern"] .window{border-radius:12px}
+body[data-theme="retro"] .window{border-radius:5px}
+body[data-theme="bloodmoon"] .window{border-radius:9px}
+body[data-theme="futuristic"] .window{border-radius:26px}
+#hud{position:absolute;right:22px;top:75px;z-index:2;width:220px;border:1px solid var(--stroke);background:#030e1db8;border-radius:13px;padding:15px;box-shadow:0 0 28px #13cdde15;pointer-events:none}
+#hud .head{color:var(--gold);letter-spacing:2px;font-size:10px;margin-bottom:10px}
+#hud .reading{font:12px Consolas,monospace;color:var(--cyan);padding:4px 0;border-bottom:1px dashed #8cc5d344;display:flex;justify-content:space-between}
+#hud .reading span:last-child{color:#c2dae0;text-align:right}
+#hud .bars{height:4px;background:linear-gradient(90deg,var(--cyan) 75%,#263b47 75%);margin:7px 0}
+.quillArea{display:grid;grid-template-rows:auto 1fr;height:100%;gap:8px;min-height:150px}
+.quillArea textarea{min-height:190px;height:100%;background:linear-gradient(#ffffff04 1px,transparent 1px),rgba(11,27,45,.75);background-size:100% 31px;color:#d8eaf1;font:16px/31px Georgia,serif;border-radius:12px;padding:16px;resize:none}
+.quillArea[data-paper="parchment"] textarea{background:#decfa2;color:#3d2814;border-color:#9b7a4d}
+.quillArea[data-paper="blueprint"] textarea{background:linear-gradient(#b4e5fc18 1px,transparent 1px),linear-gradient(90deg,#b4e5fc18 1px,transparent 1px),#09294d;color:#c3e8ff;background-size:22px 22px}
+.quillArea[data-paper="chalk"] textarea{background:#152e28;color:#f1eee6;font-family:"Comic Sans MS",cursive}
+.quillArea[data-paper="cyber"] textarea{background:linear-gradient(#4af4db1c 1px,transparent 1px),#071724;color:#b8fff9;background-size:100% 31px}
+.frameUnit{display:flex;align-items:center;gap:8px;padding:12px;border:1px solid var(--stroke);border-radius:12px;background:#0b2434ba}
+.frameUnit>*:first-child{width:80px;color:var(--gold)}
+.motion-demo{display:grid;place-items:center;height:140px;overflow:hidden;perspective:600px}
+.motion-demo .card{width:165px;height:80px;border:1px solid var(--cyan);border-radius:20px;background:linear-gradient(125deg,#29eef422,#d0a5ff22);box-shadow:0 0 30px #1ecfe936;display:grid;place-items:center;color:var(--gold);animation:floatCard 4s ease-in-out infinite}
+@keyframes floatCard{50%{transform:translateY(-12px) rotateY(12deg) rotateZ(-3deg);box-shadow:0 0 55px #1ecfe95b}}
+@media(max-width:860px){#hud{display:none}}
 </style></head><body data-theme="cyan">
-<div id="wall"></div><div id="desk"><header id="top"><div class="logo">⬡ AMPY<b>DESK</b> GPT</div><div class="small">AMPYBIOS / DESKTOP INTERFACE</div><span class="pill" id="linkstatus">PAIRING</span><div id="clock">--:--:--</div></header><div id="icons"></div></div>
+<div id="wall"></div><div id="desk"><header id="top"><div class="logo">⬡ AMPY<b>DESK</b> GPT</div><div class="small">AMPYBIOS / DESKTOP INTERFACE</div><span class="pill" id="linkstatus">PAIRING</span><div id="clock">--:--:--</div></header><div id="icons"></div><div id="hud"><div class="head">◈ AMPY SYSTEM HUD</div><div class="reading"><span>DEVICE</span><span id="hud-device">CONNECTING</span></div><div class="reading"><span>LINK</span><span id="hud-link">WAITING</span></div><div class="reading"><span>OWNER</span><span id="hud-owner">--</span></div><div class="reading"><span>REMOTE</span><span id="hud-remote">--</span></div><div class="bars"></div><div class="reading"><span>COMPOSITOR</span><span>READY / 0.1</span></div></div></div>
 <div id="taskbar"><button id="start">⬡ AMPY</button><div id="taskApps"></div><div class="right" id="statline">LOCAL LINK</div><button id="full" title="Modalità a schermo intero">⛶</button></div>
 <div id="boot"><div class="emblem"><span>⬡</span></div><h1>AMPYDESK</h1><div class="subtitle">A M P Y B I O S &nbsp; / &nbsp; G P T</div><div id="bootlog"></div><div id="bootprog"><div></div></div></div><div id="toast"></div>
 <script>
@@ -78,15 +120,16 @@ async function startBoot() {
     bootlog("DESKTOP COMPOSITOR • READY");
     $("#linkstatus").textContent="CONNECTED";
     $("#statline").textContent=state.name+" / LAN";
+    fillHud();
   }catch(e){bootlog("SERVICE ERROR • "+e.message);$("#linkstatus").textContent="OFFLINE";toast("Connessione non disponibile")}
   bootFinish();
 }
 function icon(label,glyph,id){const b=mk("button","tile");append(b,mk("span","glyph",glyph),mk("span","",label));b.onclick=()=>openWindow(id);$("#icons").append(b)}
-[["Android","▣","apps"],["File Transfer","⇄","files"],["Remote Phone","◈","remote"],["Keymapper","⌨","keymap"],["Customization","⚙","settings"],["System","◎","system"]].forEach(x=>icon(...x));
+[["Android","▣","apps"],["File Transfer","⇄","files"],["Remote Phone","◈","remote"],["Keymapper","⌨","keymap"],["Customization","⚙","settings"],["System","◎","system"],["AmpyPad","✎","pad"],["AmpyLab","✧","lab"]].forEach(x=>icon(...x));
 function openWindow(kind) {
   const existing=document.getElementById("w-"+kind);
   if(existing){existing.style.display="flex";focus(existing);return}
-  const names={apps:"ANDROID APP DRAWER",files:"AMPY FILE TRANSFER",remote:"PIXEL REMOTE CONTROL",keymap:"GAME / APP KEYMAPPER",settings:"AMPY CUSTOMIZATION",system:"SYSTEM STATUS"};
+  const names={apps:"ANDROID APP DRAWER",files:"AMPY FILE TRANSFER",remote:"PIXEL REMOTE CONTROL",keymap:"GAME / APP KEYMAPPER",settings:"AMPY CUSTOMIZATION",system:"SYSTEM STATUS",pad:"AMPYPAD / NOTE LAB",lab:"AMPYLAB / EFFECTS"};
   let w=mk("div","window");w.id="w-"+kind;w.style.left=(15+(windowCount%5)*5)+"%";w.style.top=(12+(windowCount%5)*3)+"%";windowCount++;
   let head=mk("div","titlebar");
   append(head,mk("span","mark","⬡"),mk("strong","",names[kind]||kind));
@@ -112,6 +155,8 @@ function openWindow(kind) {
   if(kind==="keymap")renderKeys(content);
   if(kind==="settings")renderSettings(content);
   if(kind==="system")renderSystem(content);
+  if(kind==="pad")renderNotes(content);
+  if(kind==="lab")renderLab(content);
 }
 function focus(w){topZ++;w.style.zIndex=topZ;front=w.id.slice(2)}
 async function renderApps(c) {
@@ -171,6 +216,16 @@ function renderRemote(c) {
 function renderKeys(c) {
   append(c,mk("h2","","Keyboard to Android touch"),mk("p","subtle","Select a key to remap, then click a position in Remote Phone. Keyboard presses produce short touches, NOT sustained gamepad input. Some games reject accessibility input."));
   c.append(action("Open remote screen",()=>openWindow("remote")));
+  c.append(mk("div","sectionhead","AMPYDECK CONTROL PROFILES"));
+  const prof=mk("div","row");
+  const keysByProfile={
+    "FPS":{KeyW:[.16,.72],KeyA:[.08,.83],KeyS:[.16,.91],KeyD:[.24,.83],Space:[.88,.86],ShiftLeft:[.76,.82],KeyR:[.87,.54]},
+    "Platformer":{ArrowLeft:[.12,.85],ArrowRight:[.27,.85],Space:[.89,.82],KeyZ:[.79,.78],KeyX:[.93,.68]},
+    "Media":{Space:[.50,.51],ArrowLeft:[.15,.5],ArrowRight:[.85,.5],ArrowUp:[.5,.25],ArrowDown:[.5,.78]},
+    "Reset":defaultMap
+  };
+  Object.entries(keysByProfile).forEach(([name,map])=>prof.append(action(name,()=>{keymap=JSON.parse(JSON.stringify(map));localStorage.setItem("ampy.keys",JSON.stringify(keymap));paint();toast("Keymap "+name+" loaded")})));
+  c.append(prof);
   let grid=mk("div","grid");grid.style.marginTop="14px";c.append(grid);
   function paint(){grid.replaceChildren();for(const [key,point] of Object.entries(keymap)){
     let b=mk("button","item",key+"  →  "+Math.round(point[0]*100)+"% / "+Math.round(point[1]*100)+"%");
@@ -190,8 +245,11 @@ document.addEventListener("keydown",async e=>{
 function renderSettings(c) {
   append(c,mk("h2","","Organic UI Laboratory"),mk("p","subtle","Personalizzazione persistente in questo browser. La modalità finestra/fullscreen del Bridge viene salvata sul Pixel."));
   c.append(mk("div","sectionhead","COLOR PALETTE"));
-  const palette=mk("div","row");[["cyan","Neon Classic"],["gold","Gold Fusion"],["violet","Violet Holo"],["mono","Minimal"]].forEach(([id,label])=>{
+  const palette=mk("div","row");[["cyberpunk","Cyberpunk"],["vista","Vista Aero"],["futuristic","Futuristic Glass"],["retro","Retro Analog"],["modern","Modern"],["bloodmoon","Blood Moon"]].forEach(([id,label])=>{
     palette.append(action(label,()=>{document.body.dataset.theme=id;localStorage.setItem("ampy.theme",id)}))});c.append(palette);
+  c.append(mk("div","sectionhead","AMPYROCKET ANIMATED WALLPAPERS"));
+  const bgRow=mk("div","row");[["aurora","Aurora"],["synthwave","Synthwave"],["warp","Warp"],["honeycomb","Hive"],["static","Still"]].forEach(([id,label])=>{
+    bgRow.append(action(label,()=>{document.body.dataset.bg=id;localStorage.setItem("ampy.bg",id)}))});c.append(bgRow);
   c.append(mk("div","sectionhead","TRANSLUCENCY / ANIMATION"));
   const reduce=mk("div","row"),check=mk("input");check.type="checkbox";check.style.width="auto";check.checked=document.body.classList.contains("reduce");check.onchange=()=>{document.body.classList.toggle("reduce",check.checked);localStorage.setItem("ampy.reduce",check.checked?"1":"0")};append(reduce,check,mk("span","","Reduced motion (accessibility)"));c.append(reduce);
   const blur=mk("input");blur.type="range";blur.min=0;blur.max=35;blur.value=localStorage.getItem("ampy.blur")||18;blur.oninput=()=>{document.documentElement.style.setProperty("--blur",blur.value+"px");localStorage.setItem("ampy.blur",blur.value)};append(c,mk("p","subtle","Window glass blur"),blur);
@@ -219,13 +277,61 @@ async function renderSystem(c){
     "[WARNING] Android lock screen blocks physical remote control",
     "[SECURITY] Keep link secret; LAN transport is HTTP (not encrypted)"
   ].join("\n")}catch(e){code.value="OFFLINE: "+e.message}};
-  c.append(action("Refresh real state",update));await update();
+  c.append(action("Refresh real state",update));await update();fillHud();
 }
 $("#start").onclick=()=>openWindow("apps");
 $("#full").onclick=async()=>{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen().catch(()=>toast("Fullscreen unavailable"))};
 function tick(){const now=new Date();$("#clock").textContent=now.toLocaleTimeString("it-IT")}tick();setInterval(tick,1000);
-document.body.dataset.theme=localStorage.getItem("ampy.theme")||"cyan";
+document.body.dataset.theme=localStorage.getItem("ampy.theme")||"cyberpunk";
+document.body.dataset.bg=localStorage.getItem("ampy.bg")||"aurora";
 document.body.classList.toggle("reduce",localStorage.getItem("ampy.reduce")==="1");
 document.documentElement.style.setProperty("--blur",(localStorage.getItem("ampy.blur")||18)+"px");
+
+function fillHud(){
+  if(!state||!state.name)return;
+  $("#hud-device").textContent=state.name.toUpperCase();
+  $("#hud-link").textContent=state.server?"LAN ACTIVE":"OFFLINE";
+  $("#hud-owner").textContent=state.owner?"ON":"OPTIONAL";
+  $("#hud-remote").textContent=state.accessibility?"ON":"OFF";
+}
+function renderNotes(c){
+  append(c,mk("h2","","AmpyPad / Studio Notebook"),mk("p","subtle","Local browser draft workspace inspired by AmpyPad. Saved in this browser only; it is not synced with the Android AmpyPad app."));
+  const bar=mk("div","row"),sel=mk("select");
+  [["cyber","Cyber Neon"],["parchment","Parchment"],["blueprint","Blueprint"],["chalk","Blackboard"]].forEach(([id,text])=>{const o=mk("option","",text);o.value=id;sel.append(o)});
+  const paper=mk("div","quillArea"),area=mk("textarea");
+  paper.dataset.paper=localStorage.getItem("ampy.paper")||"cyber";
+  sel.value=paper.dataset.paper;
+  sel.onchange=()=>{paper.dataset.paper=sel.value;localStorage.setItem("ampy.paper",sel.value)};
+  area.placeholder="✎ Your notes, sketches ideas, project log...";
+  area.value=localStorage.getItem("ampy.notebook")||"";
+  area.oninput=()=>{localStorage.setItem("ampy.notebook",area.value);count.textContent=area.value.length+" characters • autosaved"};
+  const save=action("⬇ Export TXT",()=>{
+    const blob=new Blob([area.value],{type:"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=mk("a");a.href=url;a.download="AmpyDeskGPT-Notes.txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)
+  });
+  const count=mk("span","subtle",area.value.length+" characters • autosaved");
+  append(bar,mk("span","subtle","Paper"),sel,save);
+  paper.append(bar,area,count);c.append(paper);
+}
+function renderLab(c){
+  append(c,mk("h2","","AmpyLab // FX Engine"),mk("p","subtle","Transitions inspired by AmpyRocket task cards, AmpyDeck Genie/Glitch and AmpyCam HUD. Effects are visual browser compositor demos."));
+  const demo=mk("div","motion-demo");const card=mk("div","card","⬡  MORPH / FLOAT");demo.append(card);c.append(demo);
+  c.append(mk("div","sectionhead","VISUAL ENGINE PREVIEW"));
+  let row=mk("div","row");
+  const effects={
+    "Genie":{transform:"translateY(55px) scale(.1,.02) skew(-12deg)",filter:"blur(5px)",opacity:"0"},
+    "Glitch":{transform:"translateX(13px) skew(12deg)",filter:"hue-rotate(120deg)",opacity:"0.35"},
+    "3D Flip":{transform:"perspective(300px) rotateY(84deg)",filter:"blur(1px)",opacity:"0.2"},
+    "Hologram":{transform:"scale(1.28)",filter:"blur(15px)",opacity:"0"},
+    "Organic":{transform:"scale(.5) rotate(-7deg)",filter:"hue-rotate(60deg)",opacity:"0"}
+  };
+  Object.entries(effects).forEach(([name,fx])=>row.append(action(name,()=>{
+    card.animate([{transform:"none",filter:"none",opacity:1},fx,{transform:"none",filter:"none",opacity:1}],
+    {duration:960,easing:"cubic-bezier(.12,.72,.25,1)"});toast("Preview: "+name)
+  })));c.append(row);
+  c.append(mk("div","sectionhead","BACKGROUND ENGINE"));
+  let info=mk("p","subtle","Wallpaper options: Aurora, synthwave, warp starfield, hex hive, reduced-motion background. Adjust them in Customization.");
+  c.append(info,action("Customize interface",()=>openWindow("settings")));
+}
+
 startBoot();
 </script></body></html>
