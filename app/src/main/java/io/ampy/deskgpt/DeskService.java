@@ -175,14 +175,34 @@ public final class DeskService extends Service {
         send(out,404,"application/json",jsonError("Bridge not bundled in this build"));return;
       }
     }
+    if(method.equals("GET") && path.equals("/api/live")) {
+      if(!ProjectionService.active) {
+        send(out,409,"application/json",jsonError("Start LIVE Video on the phone and approve Android screen sharing"));return;
+      }
+      out.write(bytes("HTTP/1.1 200 OK\r\nContent-Type: multipart/x-mixed-replace; boundary=ampyframe\r\n"+
+        "Cache-Control: no-store, no-cache\r\nX-Content-Type-Options: nosniff\r\nConnection: close\r\n\r\n"));
+      long last=0;
+      while(serving && ProjectionService.active && !Thread.currentThread().isInterrupted()) {
+        ProjectionService.Frame frame=ProjectionService.getFrame(last,1000);
+        if(frame==null || frame.serial<=last) continue;
+        last=frame.serial;
+        out.write(bytes("--ampyframe\r\nContent-Type: image/jpeg\r\nContent-Length: "+frame.data.length+"\r\n\r\n"));
+        out.write(frame.data);
+        out.write(bytes("\r\n"));
+        out.flush();
+      }
+      return;
+    }
     if(method.equals("GET") && path.equals("/api/status")) {
       DevicePolicyManager dpm=(DevicePolicyManager)getSystemService(DEVICE_POLICY_SERVICE);
       JSONObject obj=new JSONObject().put("server",running).put("network",ipAddress())
         .put("name",Build.MANUFACTURER+" "+Build.MODEL)
         .put("android",Build.VERSION.RELEASE).put("owner",dpm.isDeviceOwnerApp(getPackageName()))
         .put("accessibility",RemoteService.active!=null)
+        .put("live",ProjectionService.active)
+        .put("liveTransport","mjpeg")
         .put("mode",getSharedPreferences("desk",MODE_PRIVATE).getString("mode","windowed"))
-        .put("version","0.1.0").put("transferRoot","AmpyDeskGPT private Transfer folder");
+        .put("version","0.2.0").put("transferRoot","AmpyDeskGPT private Transfer folder");
       send(out,200,"application/json",obj.toString());return;
     }
     if(method.equals("GET") && path.equals("/api/apps")) {
@@ -251,6 +271,8 @@ public final class DeskService extends Service {
     RemoteService remote=RemoteService.active;
     boolean screenOn=((PowerManager)getSystemService(POWER_SERVICE)).isInteractive();
     if(method.equals("GET") && path.equals("/api/screen")) {
+      ProjectionService.Frame frame=ProjectionService.active?ProjectionService.getFrame(-1,1):null;
+      if(frame!=null) {respond(out,200,"image/jpeg",frame.data,Collections.emptyMap());return;}
       if(remote==null||!screenOn){send(out,423,"application/json",jsonError("Enable Accessibility and unlock the phone"));return;}
       byte[] image=remote.lastScreenshot();
       if(image!=null)respond(out,200,"image/jpeg",image,Collections.emptyMap());
