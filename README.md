@@ -36,6 +36,21 @@ Device Owner cannot be requested with a normal permission pop-up or silently mad
 
 The OS may reject this operation. The app does not require Device Owner for desktop, file transfer or Accessibility remote.
 
+## Rev 0.2 — Android Live + experimental Stealth Display Mode
+
+**Physical Pixel stays awake and unlocked; display is set to its lowest documented brightness (1/255, NOT necessarily 0 nits).** MediaProjection captures the Android compositor and streams MJPEG frames to the resizable **Remote Phone** browser window on the PC. This is a best-effort preview, not GPU-accelerated 60/120 FPS streaming and not independent Android-app virtual displays. Protected content may appear black and some applications may refuse recording.
+
+### Use Stealth
+
+1. Install/open AmpyDeskGPT on the phone, start the LAN server, and select **AVVIA VIDEO LIVE APPLICAZIONI**. Approve the Android full-display sharing prompt.
+2. Enable **Modifica impostazioni di sistema** (WRITE_SETTINGS) and **Disegna sopra altre app** (SYSTEM_ALERT_WINDOW) via the two explicit buttons in AmpyDeskGPT. Both are optional.
+3. Press **STEALTH • ATTIVA LUMINOSITÀ MINIMA** on Pixel while unlocked. Normal foreground Android apps remain controllable on the PC via Accessibility; the transparent touch shield intercepts the first local phone touch and restores its original brightness. Approved PC-originated taps temporarily bypass the shield.
+4. Press **STEALTH • RIPRISTINA LUMINOSITÀ** or the PC's **Ripristina luce Pixel** button to restore immediately. Screen-off, server stop, or the two-hour maximum session automatically restores brightness. The original brightness and auto-brightness mode are persisted for crash recovery on next app startup.
+
+A deprecated `SCREEN_DIM_WAKE_LOCK` is used experimentally to hold display-on state while other Android apps occupy foreground. Android or OEM power management can still override this; hardware testing is mandatory. Tapping the physical Power button locks the device and stops MediaProjection on modern Android, independent of the app.
+
+**Important:** OLED brightness `1` is the Android-supported minimum, not a true power-off of screen pixels. The physical panel continues to draw power. Avoid hours of static imagery and watch for heat/battery drain. This mode never removes Android's secure lock, never bypasses the screen-sharing consent dialog, and does not require Device Owner/root. A transparent overlay intercepts the first physical touch and may behave differently in individual games.
+
 ## Limitations
 
 - Wi-Fi local network supported. USB works through USB tethering, **not** by merely connecting a USB cable. Bluetooth remote link is not implemented in 0.1.
