@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.media.projection.MediaProjectionManager;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.widget.Button;
@@ -20,6 +21,25 @@ import android.widget.Toast;
 public final class MainActivity extends Activity {
   private LinearLayout root;
   private TextView status;
+  private static final int REQUEST_CAPTURE=150;
+  private void requestLiveCapture() {
+    MediaProjectionManager manager=(MediaProjectionManager)getSystemService(MEDIA_PROJECTION_SERVICE);
+    try {startActivityForResult(manager.createScreenCaptureIntent(),REQUEST_CAPTURE);}
+    catch(Exception e) {Toast.makeText(this,"Cattura non disponibile: "+e.getMessage(),Toast.LENGTH_LONG).show();}
+  }
+  @Override protected void onActivityResult(int requestCode,int resultCode,Intent data) {
+    super.onActivityResult(requestCode,resultCode,data);
+    if(requestCode==REQUEST_CAPTURE) {
+      if(resultCode==RESULT_OK && data!=null) {
+        Intent capture=new Intent(this,ProjectionService.class);
+        capture.putExtra("resultCode",resultCode).putExtra("resultData",data);
+        try {startForegroundService(capture);Toast.makeText(this,"Live sharing requested",Toast.LENGTH_SHORT).show();}
+        catch(Exception e) {Toast.makeText(this,"Projection error: "+e.getMessage(),Toast.LENGTH_LONG).show();}
+      }
+      else Toast.makeText(this,"Cattura annullata",Toast.LENGTH_SHORT).show();
+      refresh();
+    }
+  }
   private void line(String s, int size) {
     TextView text = new TextView(this);
     text.setText(s); text.setTextSize(size); text.setTextColor(Color.rgb(193,231,238));
@@ -35,7 +55,7 @@ public final class MainActivity extends Activity {
     root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setPadding(26,32,26,32);
     root.setBackgroundColor(Color.rgb(5,12,22)); scroll.addView(root); setContentView(scroll);
     line("◈ AMPY DESK GPT",27);
-    line("AMPYBIOS • DESKTOP BRIDGE 0.1",13);
+    line("AMPYBIOS • LIVE DESKTOP BRIDGE 0.2",13);
     status = new TextView(this); status.setTextColor(Color.rgb(100,240,226)); status.setTextSize(16);
     status.setPadding(8,25,8,25); root.addView(status);
     button("▶ AVVIA DESKTOP / SERVER", () -> {
@@ -45,6 +65,8 @@ public final class MainActivity extends Activity {
       catch (Exception e) { Toast.makeText(this,"Errore: "+e.getMessage(),Toast.LENGTH_LONG).show(); }
       refresh();
     });
+    button("◉ AVVIA VIDEO LIVE APPLICAZIONI (consenso Android)", this::requestLiveCapture);
+    button("□ INTERROMPI VIDEO LIVE", () -> { stopService(new Intent(this,ProjectionService.class)); refresh(); });
     button("■ FERMA DESKTOP", () -> { stopService(new Intent(this, DeskService.class)); refresh(); });
     button("▢ WINDOWS BRIDGE • WINDOWED", () -> { getSharedPreferences("desk",MODE_PRIVATE).edit().putString("mode","windowed").apply(); refresh(); });
     button("⛶ WINDOWS BRIDGE • FULLSCREEN", () -> { getSharedPreferences("desk",MODE_PRIVATE).edit().putString("mode","fullscreen").apply(); refresh(); });
@@ -57,7 +79,8 @@ public final class MainActivity extends Activity {
     });
     button("⟳ AGGIORNA STATO / URL", this::refresh);
     line("Connetti il PC alla stessa rete Wi-Fi o usa tethering USB. Copia il link completo visualizzato sopra nel browser del PC.",14);
-    line("Il controllo di app Android richiede Accessibilità, telefono sbloccato e rispetto delle restrizioni Android. Il desktop virtuale e lo scambio file sono indipendenti dalla schermata fisica.",13);
+    line("Live Video: seleziona l'intero schermo nella finestra di consenso di Android. Il video si interrompe quando blocchi il telefono. Per mantenere il display fisico spento servono autorizzazioni ADB separate; Device Owner non basta.",13);
+    line("La finestra Remote Phone sul PC mostra un singolo display Android, non piu' finestre di app indipendenti. Il keymapper invia tocchi brevi con Accessibilita'.",13);
     refresh();
   }
   private void refresh() {
@@ -68,7 +91,8 @@ public final class MainActivity extends Activity {
       "\nLAN: http://"+ip+":8777/?t="+token+
       "\nBridge mode: "+getSharedPreferences("desk",MODE_PRIVATE).getString("mode","windowed")+
       "\nDevice Owner: "+(dpm.isDeviceOwnerApp(getPackageName())?"ATTIVO":"NON ATTIVO")+
-      "\nAccessibilità: "+(RemoteService.active!=null?"ATTIVA":"NON ATTIVA"));
+      "\nAccessibilità: "+(RemoteService.active!=null?"ATTIVA":"NON ATTIVA")+
+      "\nVideo Live: "+(ProjectionService.active?"ATTIVO":"NON ATTIVO"));
   }
   @Override protected void onResume() { super.onResume(); if(status!=null) refresh(); }
 }
