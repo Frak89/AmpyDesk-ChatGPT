@@ -46,6 +46,22 @@ The OS may reject this operation. The app does not require Device Owner for desk
 - All LAN traffic is HTTP, not encrypted. The shared secret URL is required for each request, but network eavesdropping remains possible. Do not use public Wi-Fi or forward port 8777. Future rev: TLS pairing, device access approvals, token rotation, and file access via Storage Access Framework.
 - Large EXE is embedded in the Actions Android APK; local Android builds without this asset will return a 404 on the optional /bridge.exe route.
 
+
+## Ampy family integration (visual R1)
+
+The desktop has been extended using design research from the following repositories:
+
+| Reference | AmpyDeskGPT feature | Scope |
+|---|---|---|
+| **AmpyPad** | Notebook with Cyber Neon, Parchment, Blueprint and Blackboard paper modes; TXT export and browser-local autosave | Browser implementation, not a sync to installed AmpyPad |
+| **AmpyDeck** | Keyboard/game profiles FPS, Platformer, Media, plus customizable key-to-screen taps | Short Accessibility gestures only |
+| **AmpyRAW Cyberdark** | Common six-theme palette and dark glass | CSS adaptation, not RAW processing |
+| **AmpyCam** | Camera-style HUD with real connection, device and owner/accessibility status | No camera access |
+| **AmpyRocket** | Five animated backgrounds, draggable task windows, wobble elasticity, translucent controls | Web compositor, not Android launcher replacement |
+| **AmpyLink** | Referenced through AmpyDeck/Rocket descriptions | Repository is currently empty, so no source code was reused |
+
+The shared six themes are **Cyberpunk/Neon, Vista/Aero, Futuristic/Glass, Retro/Analog, Modern/Minimal and Blood Moon**. Additional AmpyLab effects previews include Genie, Glitch, 3D Flip, Hologram and Organic. Themes and wallpapers are customizable independently, and reduced-motion is available.
+
 ## Build
 
 Android Studio: Java 17, Gradle 8.13, Android Gradle Plugin 8.13.2, Android SDK 36. Run:
