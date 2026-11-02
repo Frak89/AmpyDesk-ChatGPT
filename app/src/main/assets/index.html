@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07101d"><title>AMPYDESK GPT // AMPYBIOS</title>
+<style>
+:root{--cyan:#46e9ef;--gold:#f6c96c;--violet:#b78bff;--ink:#07101d;--glass:rgba(9,22,38,.84);--stroke:rgba(93,224,244,.38);--blur:18px;--motion:.32s}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;background:#050b14;color:#e5f9ff;font:14px "Segoe UI",Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer;color:inherit}button:focus-visible{outline:2px solid var(--gold)}body:after{pointer-events:none;content:"";position:fixed;inset:0;z-index:20;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,.06) 4px);opacity:.32}
+#wall{position:absolute;inset:0;background:radial-gradient(ellipse at 55% 38%,rgba(2,145,187,.2),transparent 45%),radial-gradient(ellipse at 90% 85%,rgba(143,36,204,.16),transparent 44%),linear-gradient(125deg,#070c18,#0c2030 50%,#050b16);overflow:hidden}
+#wall:before{content:"";position:absolute;inset:-80%;background:repeating-conic-gradient(from 0deg,transparent 0deg,transparent 19deg,rgba(76,232,244,.07) 20deg,transparent 21deg);animation:rotate 96s linear infinite}
+#wall:after{content:"";position:absolute;left:50%;top:45%;width:min(65vw,640px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(84,218,243,.2);box-shadow:0 0 0 36px rgba(78,215,245,.025),0 0 0 88px rgba(78,215,245,.025),0 0 140px rgba(21,182,208,.15) inset}
+@keyframes rotate{to{transform:rotate(360deg)}}#desk{position:absolute;inset:0 0 57px}#top{position:absolute;left:0;right:0;top:0;height:48px;display:flex;align-items:center;gap:20px;padding:0 22px;background:rgba(4,12,22,.65);border-bottom:1px solid var(--stroke);backdrop-filter:blur(20px);z-index:4}
+.logo{letter-spacing:3px;font-size:17px;font-weight:800;color:var(--cyan);text-shadow:0 0 18px #19ddeb80}.logo b{color:var(--gold)}
+#top .small{color:#9fb9c7;font-size:11px;letter-spacing:2px}#clock{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--gold)}
+#icons{position:absolute;top:75px;left:22px;display:flex;flex-direction:column;gap:16px}
+.tile{width:105px;min-height:102px;border:1px solid transparent;border-radius:20px;background:rgba(7,25,41,.42);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:.2s;user-select:none}
+.tile:hover{background:rgba(25,75,96,.46);border-color:var(--stroke);transform:translateY(-3px);box-shadow:0 0 26px #1ae5eb1b}
+.tile .glyph{font-size:32px;color:var(--cyan);filter:drop-shadow(0 0 11px #19ecfa70)}.tile span:last-child{font-size:12px;text-align:center}
+#taskbar{position:absolute;bottom:0;left:0;right:0;height:57px;z-index:9;background:rgba(6,14,29,.9);border-top:1px solid var(--stroke);display:flex;align-items:center;padding:7px 13px;gap:8px;backdrop-filter:blur(18px)}
+#taskbar button,.panelbtn,.action{border:1px solid var(--stroke);border-radius:11px;background:rgba(24,54,73,.62);padding:9px 13px;transition:.18s}
+#taskbar button:hover,.panelbtn:hover,.action:hover{background:rgba(38,126,148,.5);box-shadow:0 0 17px #1be9ea3b;transform:translateY(-1px)}
+#taskApps{display:flex;gap:7px;min-width:0;overflow:auto}#taskApps button{font-size:12px;max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#taskbar .right{margin-left:auto;font-size:11px;color:#8bbfc6;white-space:nowrap}
+.window{position:absolute;top:14%;left:23%;width:min(720px,65vw);height:min(520px,65vh);min-width:315px;min-height:205px;border:1px solid var(--stroke);border-radius:19px;overflow:hidden;background:var(--glass);box-shadow:0 24px 95px #000b,0 0 42px #13d7f41d,0 0 0 1px #c1ffff0e inset;backdrop-filter:blur(var(--blur));resize:both;display:flex;flex-direction:column;animation:window-in .4s cubic-bezier(.14,1.3,.27,1) both;transform-origin:50% 85%;transition:box-shadow .2s}
+@keyframes window-in{from{opacity:0;transform:translateY(38px) scale(.81) skewX(-3deg)}to{opacity:1;transform:translateY(0) scale(1)}}
+.window.dragging{transition:transform .06s linear,box-shadow .2s;box-shadow:0 37px 90px #000e,0 0 50px #16e7f633}
+.titlebar{height:44px;flex:0 0 44px;padding:0 12px 0 17px;background:linear-gradient(90deg,rgba(5,88,111,.52),rgba(38,27,65,.27));border-bottom:1px solid var(--stroke);display:flex;align-items:center;gap:10px;touch-action:none;cursor:grab;user-select:none}
+.titlebar .mark{font-size:19px;color:var(--gold)}.titlebar strong{letter-spacing:1.5px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.winbuttons{margin-left:auto;display:flex;gap:4px}.winbuttons button{background:transparent;border:0;color:#aacbd7;border-radius:7px;padding:7px 10px}.winbuttons button:hover{background:#48e1ea33;color:white}
+.content{padding:18px;overflow:auto;flex:1}.sectionhead{font-size:11px;letter-spacing:2px;color:var(--gold);margin:12px 0}h2{font-size:20px;font-weight:600;letter-spacing:1px;margin:4px 0 12px;color:var(--cyan)}h3{font-size:14px;font-weight:600;margin:10px 0}
+p{color:#b7d3dc;line-height:1.5}input,select{background:#091b2e;border:1px solid #387485;color:#e1ffff;border-radius:9px;padding:9px;width:100%;min-width:0}
+input[type=range]{padding:0}input[type=file]{font-size:12px}.stack{display:flex;flex-direction:column;gap:10px}.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.row>*{flex-shrink:0}.row input,.row select{flex:1;min-width:95px}.pill{background:#164054;border:1px solid #37b7b57a;border-radius:999px;font-size:11px;color:var(--cyan);padding:4px 9px}.subtle{color:#90aeb8;font-size:12px}.item{border:1px solid #2a5465;background:#081b2b80;border-radius:12px;padding:12px;display:flex;align-items:center;gap:9px;min-width:0}.item .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:9px}.gap{height:16px}
+#boot{position:absolute;inset:0;background:radial-gradient(circle at 55% 47%,#123046,#03060e 70%);z-index:99;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .6s,visibility .6s}
+#boot .emblem{width:190px;height:190px;border:2px solid #4ce8f1aa;border-radius:50%;display:grid;place-items:center;position:relative;box-shadow:0 0 110px #13deff28,0 0 35px #09dff640 inset;animation:rotate 8s linear infinite}
+#boot .emblem:before{content:"";position:absolute;inset:19px;border:1px dashed var(--gold);border-radius:50%}
+#boot .emblem span{font-size:55px;color:var(--gold);animation:rotate 8s linear reverse infinite;text-shadow:0 0 30px #ffd069}
+#boot h1{font-size:32px;letter-spacing:8px;margin:30px 0 8px;font-weight:400}#boot .subtitle{font-size:10px;letter-spacing:5px;color:var(--cyan)}#bootlog{width:min(500px,85vw);height:126px;overflow:hidden;margin-top:27px;color:#86d6e1;font:12px Consolas,monospace;line-height:1.8}
+#bootprog{width:min(500px,85vw);height:3px;background:#174351;margin-top:8px}#bootprog div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--gold));width:0;transition:width .3s}
+#toast{position:fixed;right:18px;bottom:70px;background:#0c2935ee;border:1px solid var(--cyan);color:#e5f9ff;padding:13px 17px;border-radius:12px;max-width:330px;z-index:50;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}
+#toast.show{opacity:1;transform:translateY(0)}.screen{position:relative;background:#02050b;border:1px solid #276575;border-radius:12px;display:grid;place-items:center;min-height:180px;overflow:hidden}.screen img{max-width:100%;max-height:57vh;object-fit:contain;cursor:crosshair;user-select:none;touch-action:none}.screen .overlaylabel{position:absolute;left:8px;top:7px;padding:3px 9px;background:#01080cbb;border-radius:8px;font-size:10px;pointer-events:none}
+.kbd{border:1px solid var(--stroke);padding:3px 8px;border-radius:7px;color:var(--gold);background:#1d3540}textarea{background:#081725;border:1px solid #236b78;border-radius:10px;color:#c6e9ef;width:100%;resize:vertical}
+body[data-theme=gold]{--cyan:#ffd27e;--gold:#52f8c4;--violet:#ffd9b1;--stroke:rgba(255,189,96,.4)}
+body[data-theme=violet]{--cyan:#c997ff;--gold:#64f3ef;--violet:#f1a9ff;--stroke:rgba(210,132,255,.35)}
+body[data-theme=mono]{--cyan:#d0e7ed;--gold:#e3e7ec;--violet:#fff;--stroke:rgba(205,220,231,.4)}
+body.reduce *,body.reduce *:before,body.reduce *:after{animation-duration:.001s!important;transition-duration:.001s!important}
+@media(max-width:680px){.window{left:4%!important;top:9%!important;width:92%!important;height:75%!important}#top .small{display:none}#icons{top:60px;flex-direction:row;flex-wrap:wrap;right:0;left:8px}.tile{width:80px;min-height:75px}.tile .glyph{font-size:23px}.tile span:last-child{font-size:10px}}
+</style></head><body data-theme="cyan">
+<div id="wall"></div><div id="desk"><header id="top"><div class="logo">⬡ AMPY<b>DESK</b> GPT</div><div class="small">AMPYBIOS / DESKTOP INTERFACE</div><span class="pill" id="linkstatus">PAIRING</span><div id="clock">--:--:--</div></header><div id="icons"></div></div>
+<div id="taskbar"><button id="start">⬡ AMPY</button><div id="taskApps"></div><div class="right" id="statline">LOCAL LINK</div><button id="full" title="Modalità a schermo intero">⛶</button></div>
+<div id="boot"><div class="emblem"><span>⬡</span></div><h1>AMPYDESK</h1><div class="subtitle">A M P Y B I O S &nbsp; / &nbsp; G P T</div><div id="bootlog"></div><div id="bootprog"><div></div></div></div><div id="toast"></div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const token=new URLSearchParams(location.search).get("t")||"";
+const api=(path)=>path+(path.includes("?")?"&":"?")+"t="+encodeURIComponent(token);
+const requests=async(path,opts={})=>{const r=await fetch(api(path),{cache:"no-store",...opts});if(!r.ok)throw new Error((await r.text()).slice(0,160));return r};
+const json=async(path,opts)=>await(await requests(path,opts)).json();
+const post=async(path)=>json(path,{method:"POST"});
+const bootlog=(line)=>{const e=document.createElement("div");e.textContent="> "+line;$("#bootlog").append(e);$("#bootlog").scrollTop=9999};
+const progress=n=>$("#bootprog div").style.width=n+"%";
+let state={},windowCount=0,topZ=8,front="",timer=null,screenURL=null,remap=null;
+const profiles={};
+const defaultMap={KeyW:[.18,.74],KeyA:[.1,.83],KeyS:[.18,.91],KeyD:[.26,.83],Space:[.86,.8],Enter:[.87,.91]};
+let keymap=JSON.parse(localStorage.getItem("ampy.keys")||"null")||defaultMap;
+function toast(message){const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(timer);timer=setTimeout(()=>el.classList.remove("show"),3800)}
+function mk(tag,cls,text){let e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+function action(text,click){let b=mk("button","action",text);b.addEventListener("click",click);return b}
+function append(parent,...children){for(const child of children)parent.append(child);return parent}
+function bootFinish(){progress(100);setTimeout(()=>{$("#boot").style.opacity=0;$("#boot").style.visibility="hidden";$("#boot").style.pointerEvents="none"},330)}
+async function startBoot() {
+  bootlog("AMPY CORE • browser client loaded");progress(10);
+  try {
+    bootlog("AUTH + LAN SERVICE • requesting handshake");
+    state=await json("/api/status");progress(35);
+    bootlog("ANDROID DEVICE • "+state.name+" / "+state.android);
+    bootlog("DEVICE OWNER • "+(state.owner?"ACTIVE":"NOT PROVISIONED"));
+    bootlog("ACCESSIBILITY • "+(state.accessibility?"CONNECTED":"OPTIONAL / DISABLED"));
+    await json("/api/apps");progress(62);bootlog("ANDROID APP CATALOG • READY");
+    await json("/api/files");progress(84);bootlog("TRANSFER VAULT • MOUNTED");
+    bootlog("DESKTOP COMPOSITOR • READY");
+    $("#linkstatus").textContent="CONNECTED";
+    $("#statline").textContent=state.name+" / LAN";
+  }catch(e){bootlog("SERVICE ERROR • "+e.message);$("#linkstatus").textContent="OFFLINE";toast("Connessione non disponibile")}
+  bootFinish();
+}
+function icon(label,glyph,id){const b=mk("button","tile");append(b,mk("span","glyph",glyph),mk("span","",label));b.onclick=()=>openWindow(id);$("#icons").append(b)}
+[["Android","▣","apps"],["File Transfer","⇄","files"],["Remote Phone","◈","remote"],["Keymapper","⌨","keymap"],["Customization","⚙","settings"],["System","◎","system"]].forEach(x=>icon(...x));
+function openWindow(kind) {
+  const existing=document.getElementById("w-"+kind);
+  if(existing){existing.style.display="flex";focus(existing);return}
+  const names={apps:"ANDROID APP DRAWER",files:"AMPY FILE TRANSFER",remote:"PIXEL REMOTE CONTROL",keymap:"GAME / APP KEYMAPPER",settings:"AMPY CUSTOMIZATION",system:"SYSTEM STATUS"};
+  let w=mk("div","window");w.id="w-"+kind;w.style.left=(15+(windowCount%5)*5)+"%";w.style.top=(12+(windowCount%5)*3)+"%";windowCount++;
+  let head=mk("div","titlebar");
+  append(head,mk("span","mark","⬡"),mk("strong","",names[kind]||kind));
+  let controls=mk("div","winbuttons");let min=mk("button","","━"),max=mk("button","","▢"),close=mk("button","","×");
+  min.title="Minimize";max.title="Maximize / Restore";close.title="Close";
+  controls.append(min,max,close);head.append(controls);
+  let content=mk("div","content");w.append(head,content);$("#desk").append(w);
+  let task=mk("button","",names[kind]);task.id="task-"+kind;$("#taskApps").append(task);
+  task.onclick=()=>w.style.display==="none"?(w.style.display="flex",focus(w)):(w.style.display="none");
+  close.onclick=()=>{w.remove();task.remove();if(front===kind)front=""};
+  min.onclick=()=>w.style.display="none";
+  max.onclick=()=>{let full=w.dataset.max==="1";w.dataset.max=full?"0":"1";w.style.left=full?"19%":"1%";w.style.top=full?"14%":"50px";w.style.width=full?"700px":"98%";w.style.height=full?"510px":"calc(100% - 60px)";w.style.resize=full?"both":"none"};
+  w.addEventListener("pointerdown",()=>focus(w));
+  let drag=null;
+  head.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;focus(w);head.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,l:w.offsetLeft,t:w.offsetTop,vx:0,vy:0};w.classList.add("dragging");e.preventDefault()});
+  head.addEventListener("pointermove",e=>{if(!drag)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.vx=dx;drag.vy=dy;w.style.left=Math.max(0,Math.min(innerWidth-90,drag.l+dx))+"px";w.style.top=Math.max(48,Math.min(innerHeight-110,drag.t+dy))+"px";w.style.transform="skew("+Math.max(-5,Math.min(5,dx*.012))+"deg,"+Math.max(-3,Math.min(3,dy*.014))+"deg) rotate("+Math.max(-3,Math.min(3,dx*.007))+"deg)"});
+  function release(){if(!drag)return;drag=null;w.classList.remove("dragging");w.style.transition="transform .65s cubic-bezier(.13,1.8,.4,1), box-shadow .2s";w.style.transform="";setTimeout(()=>w.style.transition="",680)}
+  head.addEventListener("pointerup",release);head.addEventListener("pointercancel",release);
+  focus(w);
+  if(kind==="apps")renderApps(content);
+  if(kind==="files")renderFiles(content);
+  if(kind==="remote")renderRemote(content);
+  if(kind==="keymap")renderKeys(content);
+  if(kind==="settings")renderSettings(content);
+  if(kind==="system")renderSystem(content);
+}
+function focus(w){topZ++;w.style.zIndex=topZ;front=w.id.slice(2)}
+async function renderApps(c) {
+  append(c,mk("h2","","Installed Android applications"),mk("p","subtle","Il comando richiede l'apertura autorizzata di app Android. Android può bloccare gli avvii in background."));
+  let search=mk("input");search.placeholder="Search applications...";c.append(search);
+  let grid=mk("div","grid");grid.style.marginTop="14px";c.append(grid);
+  let apps=[];
+  try{apps=await json("/api/apps");apps.sort((a,b)=>a.name.localeCompare(b.name));}catch(e){toast(e.message)}
+  const draw=()=>{grid.replaceChildren();for(const app of apps.filter(a=>a.name.toLowerCase().includes(search.value.toLowerCase()))){
+    const b=mk("button","item");append(b,mk("span","","▣"),mk("span","name",app.name));b.onclick=async()=>{try{await post("/api/launch?package="+encodeURIComponent(app.package));toast("Avvio richiesto: "+app.name)}catch(e){toast("Avvio bloccato: "+app.name)}};grid.append(b)
+  }};search.oninput=draw;draw();
+}
+async function renderFiles(c) {
+  append(c,mk("h2","","PC ⇄ Pixel Transfer"),mk("p","subtle","Caricamento e download da una cartella isolata AmpyDeskGPT sul telefono. Max 100 MB per file; rete locale fidata."));
+  let row=mk("div","row");let chooser=mk("input");chooser.type="file";chooser.multiple=true;chooser.style.flex="1";let upload=action("⬆ Upload",()=>sendFiles(chooser.files));
+  let refresh=action("⟳ Refresh",list);append(row,chooser,upload,refresh);c.append(row);
+  let progress=mk("p","subtle","");c.append(progress);
+  let drop=mk("div","item","Drop files here from Windows Explorer");drop.style.justifyContent="center";drop.style.height="70px";drop.style.borderStyle="dashed";drop.style.margin="12px 0";c.append(drop);
+  drop.ondragover=e=>{e.preventDefault();drop.style.borderColor="var(--gold)"};
+  drop.ondragleave=()=>drop.style.borderColor="";
+  drop.ondrop=e=>{e.preventDefault();drop.style.borderColor="";sendFiles(e.dataTransfer.files)};
+  let listBox=mk("div","stack");c.append(listBox);
+  async function list(){listBox.replaceChildren();try{let files=await json("/api/files");if(!files.length)listBox.append(mk("p","subtle","The transfer folder is empty."));for(const file of files){
+    let item=mk("div","item"),name=mk("span","name",file.name),sz=mk("span","subtle",(file.size/1024).toFixed(1)+" KB");
+    let download=action("⬇ Download",()=>{let a=document.createElement("a");a.href=api("/api/download?name="+encodeURIComponent(file.name));a.download=file.name;document.body.append(a);a.click();a.remove()});
+    append(item,mk("span","","▤"),name,sz,download);listBox.append(item);
+  }}catch(e){toast(e.message)}}
+  async function sendFiles(files){for(const file of files){if(file.size>100*1024*1024){toast("100 MB limit: "+file.name);continue}progress.textContent="Transferring "+file.name+"...";
+    try {await new Promise((resolve,reject)=>{const xhr=new XMLHttpRequest();xhr.open("POST",api("/api/upload?name="+encodeURIComponent(file.name)));xhr.upload.onprogress=e=>{if(e.lengthComputable)progress.textContent=file.name+": "+Math.round(e.loaded/e.total*100)+"%"};xhr.onload=()=>xhr.status===200?resolve():reject(new Error(xhr.responseText));xhr.onerror=()=>reject(new Error("Network"));xhr.send(file)});toast(file.name+" transferred")}catch(e){toast("Transfer error "+e.message)}
+  }chooser.value="";progress.textContent="Transfer operation completed";await list()}
+  await list();
+}
+function renderRemote(c) {
+  append(c,mk("h2","","Pixel 7 Pro // Android display"),mk("p","subtle","Screenshot tramite Accessibilità (campionamento, non video a 60 FPS). Display acceso e telefono sbloccato. Il desktop virtuale resta indipendente."));
+  let row=mk("div","row");for(const [label,name] of [["⌂ Home","home"],["↶ Back","back"],["▤ Recent","recents"],["⏷ Notifications","notifications"]]){
+    row.append(action(label,async()=>{try{await post("/api/action?name="+name)}catch(e){toast("Android unavailable")}}))
+  }c.append(row);
+  let s=mk("div","screen");s.style.marginTop="12px";
+  let img=mk("img");img.alt="Android screen";let help=mk("span","overlaylabel","Tap a point to control Android");s.append(img,help);c.append(s);
+  let status=mk("p","subtle","Starting remote view...");c.append(status);
+  img.addEventListener("click",async e=>{
+    const box=img.getBoundingClientRect();let x=(e.clientX-box.left)/box.width,y=(e.clientY-box.top)/box.height;
+    if(remap){keymap[remap]=[+x.toFixed(4),+y.toFixed(4)];localStorage.setItem("ampy.keys",JSON.stringify(keymap));toast("Mapped "+remap);remap=null;return}
+    try{await post("/api/tap?x="+x+"&y="+y)}catch(e){toast("Tap not sent: unlock phone / enable accessibility")}
+  });
+  let alive=true;
+  const poll=async()=>{
+    if(!document.contains(s))return;
+    if(document.hidden){setTimeout(poll,1400);return}
+    try{const r=await requests("/api/screen");let blob=await r.blob();let url=URL.createObjectURL(blob);
+      img.onload=()=>{if(screenURL)URL.revokeObjectURL(screenURL);screenURL=url};
+      img.src=url;status.textContent="LIVE SNAPSHOT • click on image or use mapped keys";
+    }catch(e){status.textContent="Screen unavailable. Enable accessibility and unlock the Pixel."}
+    setTimeout(poll,950);
+  };poll();
+}
+function renderKeys(c) {
+  append(c,mk("h2","","Keyboard to Android touch"),mk("p","subtle","Select a key to remap, then click a position in Remote Phone. Keyboard presses produce short touches, NOT sustained gamepad input. Some games reject accessibility input."));
+  c.append(action("Open remote screen",()=>openWindow("remote")));
+  let grid=mk("div","grid");grid.style.marginTop="14px";c.append(grid);
+  function paint(){grid.replaceChildren();for(const [key,point] of Object.entries(keymap)){
+    let b=mk("button","item",key+"  →  "+Math.round(point[0]*100)+"% / "+Math.round(point[1]*100)+"%");
+    b.onclick=()=>{remap=key;toast("Now click a target in Remote Phone: "+key);openWindow("remote")};grid.append(b)
+  }}paint();
+  let row=mk("div","row");let keyIn=mk("input");keyIn.placeholder="Browser key code, e.g. KeyQ";let add=action("+ Add key",()=>{if(!/^[a-zA-Z0-9]{2,20}$/.test(keyIn.value))return toast("Use KeyQ / Digit1 / Space");keymap[keyIn.value]=[.5,.5];localStorage.setItem("ampy.keys",JSON.stringify(keymap));paint()});
+  let reset=action("↺ Reset",()=>{keymap={...defaultMap};localStorage.setItem("ampy.keys",JSON.stringify(keymap));paint()});
+  row.append(keyIn,add,reset);c.append(row);
+  let copy=action("Copy keymap JSON",()=>navigator.clipboard?.writeText(JSON.stringify(keymap,null,2)).then(()=>toast("Copied")).catch(()=>toast("Clipboard unavailable")));copy.style.marginTop="10px";c.append(copy);
+  append(c,mk("p","subtle","Mapped keys work while the Remote Phone window is in front and this browser has keyboard focus."));
+}
+document.addEventListener("keydown",async e=>{
+  if(front!=="remote"||document.activeElement?.matches("input,textarea,select"))return;
+  if(e.repeat||!keymap[e.code])return;e.preventDefault();
+  const p=keymap[e.code];try{await post("/api/tap?x="+p[0]+"&y="+p[1])}catch(err){toast("Keymap unavailable — unlock device")}
+});
+function renderSettings(c) {
+  append(c,mk("h2","","Organic UI Laboratory"),mk("p","subtle","Personalizzazione persistente in questo browser. La modalità finestra/fullscreen del Bridge viene salvata sul Pixel."));
+  c.append(mk("div","sectionhead","COLOR PALETTE"));
+  const palette=mk("div","row");[["cyan","Neon Classic"],["gold","Gold Fusion"],["violet","Violet Holo"],["mono","Minimal"]].forEach(([id,label])=>{
+    palette.append(action(label,()=>{document.body.dataset.theme=id;localStorage.setItem("ampy.theme",id)}))});c.append(palette);
+  c.append(mk("div","sectionhead","TRANSLUCENCY / ANIMATION"));
+  const reduce=mk("div","row"),check=mk("input");check.type="checkbox";check.style.width="auto";check.checked=document.body.classList.contains("reduce");check.onchange=()=>{document.body.classList.toggle("reduce",check.checked);localStorage.setItem("ampy.reduce",check.checked?"1":"0")};append(reduce,check,mk("span","","Reduced motion (accessibility)"));c.append(reduce);
+  const blur=mk("input");blur.type="range";blur.min=0;blur.max=35;blur.value=localStorage.getItem("ampy.blur")||18;blur.oninput=()=>{document.documentElement.style.setProperty("--blur",blur.value+"px");localStorage.setItem("ampy.blur",blur.value)};append(c,mk("p","subtle","Window glass blur"),blur);
+  c.append(mk("div","sectionhead","BRIDGE DISPLAY MODE"));
+  const mode=mk("select");for(const m of ["windowed","fullscreen"]){const o=mk("option","",m);o.value=m;mode.append(o)}mode.value=state.mode||"windowed";
+  mode.onchange=async()=>{try{await post("/api/mode?mode="+mode.value);state.mode=mode.value;toast("Bridge mode saved: "+mode.value)}catch(e){toast(e.message)}};c.append(mode);
+  c.append(mk("div","sectionhead","WINDOWS BRIDGE • OPTIONAL PORTABLE EXECUTABLE"));
+  append(c,mk("p","subtle","Download the signed-by-workflow self-contained helper on the PC, then run it manually. No installer. Windows will not auto-execute transferred EXEs."));
+  c.append(action("⬇ Download AmpyDeskBridge.exe",()=>{let a=mk("a");a.href=api("/bridge.exe");a.download="AmpyDeskBridge.exe";document.body.append(a);a.click();a.remove()}));
+  c.append(mk("div","gap"));
+  c.append(action("Browser fullscreen",async()=>{try{await document.documentElement.requestFullscreen()}catch(e){toast("Fullscreen rejected by browser")}}));
+}
+async function renderSystem(c){
+  append(c,mk("h2","","Live boot / system diagnostics"));
+  let code=mk("textarea");code.readOnly=true;code.rows=15;c.append(code);
+  const update=async()=>{try{state=await json("/api/status");code.value=[
+    "[AMPY] HELLO DESKTOP", "[SERVICE] "+(state.server?"ACTIVE":"STOPPED"),
+    "[DEVICE] "+state.name, "[ANDROID] "+state.android,
+    "[NETWORK] "+state.network+":8777",
+    "[ACCESSIBILITY] "+(state.accessibility?"ACTIVE":"INACTIVE"),
+    "[DEVICE OWNER] "+(state.owner?"PROVISIONED":"NOT PROVISIONED"),
+    "[TRANSFER] "+state.transferRoot,
+    "[BRIDGE MODE] "+state.mode,
+    "[DESKTOP] Browser-based compositor ready",
+    "[WARNING] Android lock screen blocks physical remote control",
+    "[SECURITY] Keep link secret; LAN transport is HTTP (not encrypted)"
+  ].join("\n")}catch(e){code.value="OFFLINE: "+e.message}};
+  c.append(action("Refresh real state",update));await update();
+}
+$("#start").onclick=()=>openWindow("apps");
+$("#full").onclick=async()=>{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen().catch(()=>toast("Fullscreen unavailable"))};
+function tick(){const now=new Date();$("#clock").textContent=now.toLocaleTimeString("it-IT")}tick();setInterval(tick,1000);
+document.body.dataset.theme=localStorage.getItem("ampy.theme")||"cyan";
+document.body.classList.toggle("reduce",localStorage.getItem("ampy.reduce")==="1");
+document.documentElement.style.setProperty("--blur",(localStorage.getItem("ampy.blur")||18)+"px");
+startBoot();
+</script></body></html>

@@ -1,0 +1,55 @@
+name: AmpyDeskGPT Android and Windows portable
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Compile portable self-contained Windows Bridge
+        run: dotnet publish windows/AmpyDeskBridge.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AmpyDeskBridge-win-x64
+          path: publish/AmpyDeskBridge.exe
+          if-no-files-found: error
+  android:
+    needs: portable-windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: AmpyDeskBridge-win-x64
+          path: bridge-bin
+      - name: Bundle portable helper into Android APK
+        run: |
+          mkdir -p app/src/main/assets
+          cp bridge-bin/AmpyDeskBridge.exe app/src/main/assets/AmpyDeskBridge.exe
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android API 36
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Assemble debug APK
+        run: gradle --no-daemon :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AmpyDeskGPT-debug-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
