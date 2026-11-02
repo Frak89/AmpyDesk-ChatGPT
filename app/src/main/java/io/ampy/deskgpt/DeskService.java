@@ -165,9 +165,9 @@ public final class DeskService extends Service {
     if(method.equals("GET") && path.equals("/bridge.exe")) {
       try(InputStream asset=getAssets().open("AmpyDeskBridge.exe")) {
         int length=asset.available();
-        String header="HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: "+length+
+        String responseHeader="HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: "+length+
           "\r\nContent-Disposition: attachment; filename=\"AmpyDeskBridge.exe\"\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n";
-        out.write(bytes(header));
+        out.write(bytes(responseHeader));
         byte[] buffer=new byte[65536];int n;
         while((n=asset.read(buffer))!=-1)out.write(buffer,0,n);
         out.flush();return;
