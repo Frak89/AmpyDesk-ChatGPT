@@ -46,6 +46,8 @@ public final class MainActivity extends Activity {
       refresh();
     });
     button("■ FERMA DESKTOP", () -> { stopService(new Intent(this, DeskService.class)); refresh(); });
+    button("▢ WINDOWS BRIDGE • WINDOWED", () -> { getSharedPreferences("desk",MODE_PRIVATE).edit().putString("mode","windowed").apply(); refresh(); });
+    button("⛶ WINDOWS BRIDGE • FULLSCREEN", () -> { getSharedPreferences("desk",MODE_PRIVATE).edit().putString("mode","fullscreen").apply(); refresh(); });
     button("♧ ABILITA ACCESSIBILITÀ / CONTROLLO TOUCH", () -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
     button("◉ IMPOSTAZIONI DEVICE OWNER", () -> {
       DevicePolicyManager dpm = (DevicePolicyManager)getSystemService(DEVICE_POLICY_SERVICE);
@@ -64,6 +66,7 @@ public final class MainActivity extends Activity {
     String token = DeskService.token(this);
     status.setText("SERVER: "+(DeskService.running?"ATTIVO":"FERMO")+
       "\nLAN: http://"+ip+":8777/?t="+token+
+      "\nBridge mode: "+getSharedPreferences("desk",MODE_PRIVATE).getString("mode","windowed")+
       "\nDevice Owner: "+(dpm.isDeviceOwnerApp(getPackageName())?"ATTIVO":"NON ATTIVO")+
       "\nAccessibilità: "+(RemoteService.active!=null?"ATTIVA":"NON ATTIVA"));
   }
