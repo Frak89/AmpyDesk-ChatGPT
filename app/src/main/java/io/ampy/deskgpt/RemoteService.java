@@ -20,6 +20,7 @@ public final class RemoteService extends AccessibilityService {
   @Override public void onInterrupt() {}
   @Override public void onDestroy() { active=null; super.onDestroy(); }
   public boolean tap(float x, float y) {
+    DimModeController.beforeRemoteTap();
     int w=getResources().getDisplayMetrics().widthPixels;
     int h=getResources().getDisplayMetrics().heightPixels;
     Path path=new Path(); path.moveTo(Math.max(0,Math.min(w-1,x*w)),Math.max(0,Math.min(h-1,y*h)));
